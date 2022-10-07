@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="Draw kanji of hanzi">
+<link href="_css/style.css" rel="stylesheet" type="text/css">
+<link href="_css/cjkdraw.css" rel="stylesheet" type="text/css">
+<title>CJKDraw</title>
+<script>
+function setAnimCJKDir()
+{
+	// change this to any convenient path to animCJK
+	cjkd.setParamToStore("animCJKDir","/animCJK/official/");
+}
+function doCjkdOKSettings()
+{
+	var e=document.querySelector(".settingsDialog");
+	cjkd.setParamToStore("gridOn",e.querySelector('.gridOn input').checked?"1":"0");
+	cjkd.params.gridOn=cjkd.getParamFromStore("gridOn");
+	if(cjkd.params.gridOn=="0") document.querySelector(".cjkd .grid").style.display="none";
+	else document.querySelector(".cjkd .grid").style.display="block";
+}
+function doCjkdSettings()
+{
+	var e;
+	e=document.querySelector(".cjkd .settingsDialog");
+	if(!e)
+	{
+		let s,a;
+		e=document.createElement('dialog');
+		e.classList.add("settingsDialog");
+		s="<form method='dialog'>";
+		s+="<h1>CJKDraw</h1>";
+		a=(cjkd.params.targetLang=="fr")?"Grille":"Grid";
+		s+="<label class='gridOn'><input type='checkbox'><span>"+a+"</span></label>";
+		s+="<button value='OK'>OK</button>";
+		s+="<button value='cancel'>"+((cjkd.params.targetLang=="fr")?"Annuler":"Cancel")+"</button>";
+		s+="</form>";
+		e.innerHTML=s;
+		e.addEventListener('close',function()
+			{
+				if(this.returnValue=="OK") doCjkdOKSettings();
+			});
+		document.querySelector(".cjkd").appendChild(e);
+	}
+	e.querySelector('.gridOn input').checked=(cjkd.params.gridOn=="1");
+	e.showModal();
+}
+</script>
+</head>
+<body>
+<h1>CJKDraw</h1>
+<ul class="selector settings">
+<li class="flag zhHans"><button onclick="cjkd.setSourceLang('ja');cjkd.start('');"><img alt="中国国旗" src="_img/chn23.svg" width="48" height="32"></button></li>
+<li class="flag ja"><button onclick="cjkd.setSourceLang('zhHans');cjkd.start('');"><img alt="日本の国旗" src="_img/jap23.svg" width="48" height="32"></button></li>
+<li class="icon"><button onclick="doCjkdSettings();"><img class="settingsIcon" alt="Settings" title="Settings" src="_img/settings.svg" width="32" height="32"></button></li>
+<li class="flag en"><button onclick="cjkd.setTargetLang('fr');cjkd.start('');"><img alt="British flag" src="_img/gbr23.svg" width="48" height="32"></button></li>
+<li class="flag fr"><button onclick="cjkd.setTargetLang('en');cjkd.start('');"><img alt="Drapeau français" src="_img/fra23.svg" width="48" height="32"></button></li>
+</ul>
+<ul class="selector ja">
+	<li><button onclick="cjkd.start('G1');">1</button></li>
+	<li><button onclick="cjkd.start('G2');">2</button></li>
+	<li><button onclick="cjkd.start('G3');">3</button></li>
+	<li><button onclick="cjkd.start('G4');">4</button></li>
+	<li><button onclick="cjkd.start('G5');">5</button></li>
+	<li><button onclick="cjkd.start('G6');">6</button></li>
+	<li><button onclick="cjkd.start('G7');">7</button></li>
+	<li><button onclick="cjkd.start('G8');">8</button></li>
+</ul>
+<ul class="selector zhHans">
+	<li><button onclick="cjkd.start('NHSK1');">1</button></li>
+	<li><button onclick="cjkd.start('NHSK2');">2</button></li>
+	<li><button onclick="cjkd.start('NHSK3');">3</button></li>
+	<li><button onclick="cjkd.start('NHSK4');">4</button></li>
+	<li><button onclick="cjkd.start('NHSK5');">5</button></li>
+	<li><button onclick="cjkd.start('NHSK6');">6</button></li>
+	<li><button onclick="cjkd.start('NHSK7');">7</button></li>
+	<li><button onclick="cjkd.start('NHSK8');">8</button></li>
+	<li><button onclick="cjkd.start('NHSK9');">9</button></li>
+</ul>
+<script src="cjkdraw.js"></script>
+<script>
+cjkd.setSourceLang=function(lang)
+{
+	let k,kmax,p;
+	let listJa=document.querySelectorAll(".selector.ja");
+	let listZhHans=document.querySelectorAll(".selector.zhHans");
+	let flagJa=document.querySelector(".flag.ja");
+	let flagZhHans=document.querySelector(".flag.zhHans");
+	kmax=listJa.length;
+	for(k=0;k<kmax;k++) listJa[k].style.display=(lang=="ja")?"block":"none";
+	kmax=listZhHans.length;
+	for(k=0;k<kmax;k++) listZhHans[k].style.display=(lang=="zhHans")?"block":"none";
+	flagJa.style.display=(lang=="ja")?"inline-block":"none";
+	flagZhHans.style.display=(lang=="zhHans")?"inline-block":"none";
+	p=cjkd.getStore();
+	p.sourceLang=lang;
+	if(!/^G[0-9]+$/.test(p.jaDicoName)) p.jaDicoName="G1";
+	if(!/^(HSK|NHSK)[0-9]+$/.test(p.zhHansDicoName)) p.zhHansDicoName="NHSK1";
+	cjkd.setStore(p);
+}
+cjkd.setTargetLang=function(lang)
+{
+	let flagEn=document.querySelector(".flag.en");
+	let flagFr=document.querySelector(".flag.fr");
+	let settingsIcon=document.querySelector(".settingsIcon");
+	flagEn.style.display=(lang=="en")?"inline-block":"none";
+	flagFr.style.display=(lang=="fr")?"inline-block":"none";
+	settingsIcon.setAttribute("title",(lang=="fr")?"Settings":"Paramètres");
+	cjkd.setParamToStore("targetLang",lang);
+}
+
+</script>
+<script>
+window.addEventListener("load",function()
+	{
+		cjkd.setSourceLang(cjkd.getParamFromStore("sourceLang"));
+		cjkd.setTargetLang(cjkd.getParamFromStore("targetLang"));
+		setAnimCJKDir();
+		cjkd.start('');
+	}
+);
+</script>
+</body>
+</html>

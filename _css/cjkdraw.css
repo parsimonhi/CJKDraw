@@ -1,0 +1,105 @@
+.cjkd .box
+{
+	position:relative;
+	width:50vmin;
+	height:50vmin;
+	border:1px solid #000;
+	margin:0.5em auto;
+}
+.cjkd .box svg
+{
+	display:block;
+	position:absolute;
+	top:0;
+	left:0;
+	touch-action:none; /* to avoid scrolling when drawing */
+}
+.cjkd .box svg.grid
+{
+	z-index:1;
+}
+.cjkd svg.acjk
+{
+	z-index:2;
+}
+.cjkd svg.userDrawing
+{
+	z-index:3;
+}
+.cjkd .box svg.grid path
+{
+	stroke:#777;
+	stroke-width:0.1px;
+	stroke-dasharray:1px;
+	fill:transparent;
+}
+.cjkd svg.acjk path
+{
+	fill:transparent;
+}
+.cjkd svg.acjk path[id]
+{
+	fill:transparent;
+}
+.cjkd svg.acjk path[clip-path]
+{
+	stroke-width:128;
+	stroke-linecap:round;
+}
+.cjkd .box svg.userDrawing
+{
+	stroke-width:32px;
+}
+.cjkd .box svg.userDrawing *
+{
+	pointer-events:none;
+}
+.cjkd .selector button
+{
+	font-size:1em;
+	margin:0.25em;
+	min-width:2em;
+}
+.cjkd .selector.charNumList
+{
+	display:grid;
+	grid-template-columns:repeat(auto-fill,minmax(3em,1fr));
+	grid-gap:0.125em;
+}
+.cjkd .selector.charNumList button
+{
+	-webkit-appearance:none;
+    -moz-appearance:none;
+    appearance:none;
+}
+.cjkd .selector.charNumList button.notDrawn
+{
+	border:1px solid #000;
+	background:#000;
+	color:#fff;
+}
+.cjkd .selector.charNumList button.drawnBad
+{
+	border:1px solid #f00;
+	background:#f00;
+	color:#fff;
+}
+.cjkd .selector.charNumList button.drawnGood
+{
+	border:1px solid #090;
+	background:#090;
+	color:#fff;
+}
+.cjkd .selector.charNumList button:focus
+{
+	outline:1px solid #fff;
+	outline-offset:-2px;
+}
+.cjkd em
+{
+	font-size:0.75em;
+}
+.cjkd em a
+{
+	color:#000;
+}
