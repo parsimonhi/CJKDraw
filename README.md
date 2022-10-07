@@ -10,5 +10,5 @@ Require https://github.com/parsimonhi/animCJK
 
 - Download https://github.com/parsimonhi/animCJK
 - Download https://github.com/parsimonhi/CJKDraw
-- Replace the path in CJKDraw index.html cjkd.setParamToStore("animCJKDir","/animCJK/official/"); by a convenient path to your animCJK folder.  
+- Replace "/animCJK/official/" in the line cjkd.setParamToStore("animCJKDir","/animCJK/official/"); of CJKDraw index.html by a convenient path to your animCJK folder.  
 
