@@ -41,6 +41,18 @@
 {
 	fill:transparent;
 }
+.cjkd svg.acjk path.drawnBad
+{
+	stroke:#f00;
+}
+.cjkd svg.acjk path.drawnGood
+{
+	stroke:#000;
+}
+.cjkd svg.acjk.drawnGood path.drawnGood
+{
+	stroke:#090;
+}
 .cjkd svg.acjk path[clip-path]
 {
 	stroke-width:128;

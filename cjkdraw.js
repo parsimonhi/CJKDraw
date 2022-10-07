@@ -36,12 +36,17 @@ cjkd.distance=function(p1,p2)
 	return Math.sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y));
 };
 
-cjkd.updateButtons=function()
+cjkd.finalCut=function()
 {
 	let e=document.querySelector(".cjkd .charNumList li:nth-of-type("+(cjkd.k+1)+") button");
+	if(cjkd.n==0) cjkd.n=2;
 	if(e)
 	{
-		if(cjkd.n==2) e.className="drawnGood";
+		if(cjkd.n==2)
+		{
+			document.querySelector(".cjkd .acjk").classList.add("drawnGood");
+			e.className="drawnGood";
+		}
 		else if(cjkd.n==1) e.className="drawnBad";
 		else e.className="notDrawn";
 	}
@@ -157,14 +162,13 @@ cjkd.verify=function(p1)
 		// console.log("d:"+d+"/"+dmax);
 		if(!v) console.log("stroke shape too different");
 	}
-	if(v) p2.style.stroke="#000";
-	else {p2.style.stroke="#f00";cjkd.n=1;}
+	if(v) p2.classList.add("drawnGood");
+	else {p2.classList.add("drawnBad");cjkd.n=1;}
 	p1.style.stroke="transparent";
 	cjkd.s++;
 	if(cjkd.s>=cjkd.numOfStrokes)
 	{
-		if(cjkd.n==0) cjkd.n=2;
-		cjkd.updateButtons();
+		cjkd.finalCut();
 	}
 };
 
