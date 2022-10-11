@@ -10,7 +10,15 @@ cjkd.predLabel={en:"Pred",fr:"Précédent"};
 cjkd.retryLabel={en:"Retry",fr:"Réessayer"};
 cjkd.nextLabel={en:"Next",fr:"Suivant"};
 cjkd.js=document.scripts[document.scripts.length-1]; // current js script
-
+cjkd.i18n=
+{
+	"Stroke too small":{"fr":"Trait trop petit"},
+	"Stroke start too far":{"fr":"Départ du trait trop loin"},
+	"Stroke direction too different":{"fr":"Direction du trait trop différente"},
+	"Stroke too short":{"fr":"Trait trop court"},
+	"Stroke too long":{"fr":"Trait trop long"},
+	"Stroke shape too different":{"fr":"Forme du trait trop différente"}
+};
 cjkd.getStore=function()
 {
 	return JSON.parse(localStorage.getItem('cjkd'));
@@ -30,7 +38,13 @@ cjkd.setParamToStore=function(a,v)
 	p[a]=v;
 	localStorage.setItem('cjkd',JSON.stringify(p));
 };
-
+cjkd.log=function(s)
+{
+	let m;
+	if((cjkd.params.targetLang=="en")||!cjkd.i18n[s]||!cjkd.i18n[s][cjkd.params.targetLang]) m=s;
+	else m=cjkd.i18n[s][cjkd.params.targetLang];
+	document.querySelector(".cjkd .hint").innerHTML=m;
+};
 cjkd.distance=function(p1,p2)
 {
 	return Math.sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y));
@@ -60,11 +74,12 @@ cjkd.verify=function(p1)
 	let pts1=[],pts2=[];
 	let v=true;
 	let k,kmax;
+	cjkd.log("");
 	len1=p1.getTotalLength();
 	if(len1<10)
 	{
 		v=false; // discard very small strokes (< 10 svg units)
-		console.log("stroke too small");
+		cjkd.log("Stroke too small");
 	}
 	len2=p2.getTotalLength();
 	if(v)
@@ -80,27 +95,16 @@ cjkd.verify=function(p1)
 	}
 	if(v)
 	{
-		// discard strokes that are too smaller or too bigger
-		if((len1>256)||(len2>256))
-		{
-			if(len1<0.5*len2) v=false;
-			else if(len1>2*len2) v=false;
-		}
-		// console.log("len1:"+len1+" "+"len2:"+len2);
-		if(!v) console.log("stroke too smaller or too bigger");
-	}
-	if(v)
-	{
 		// discard strokes that have their start point too far
 		let d;
 		d=cjkd.distance(pts1[0],pts2[0]);
 		if(d>256) v=false;
 		// console.log("d: "+d);
-		if(!v) console.log("stroke too far");
+		if(!v) cjkd.log("Stroke start too far");
 	}
 	if(v)
 	{
-		// discard strokes that have a too different slope
+		// discard strokes that have a too different direction
 		let d1,d2,cos1,cos2,sin1,sin2,a1,a2,a3,a4,am;
 		if(len2>256) am=Math.PI/6;
 		else am=Math.PI/4;
@@ -118,7 +122,22 @@ cjkd.verify=function(p1)
 			&&(Math.abs(a1+2*Math.PI-a2)>am)
 			&&(Math.abs(a1-2*Math.PI-a2)>am)) v=false;
 		// console.log(180*am/Math.PI+" "+180*a1/Math.PI+" "+180*a2/Math.PI);
-		if(!v) console.log("stroke slope too different");
+		if(!v) cjkd.log("Stroke direction too different");
+	}
+	if(v)
+	{
+		// discard strokes that are too smaller or too bigger
+		if((len1>256)&&(len2>256))
+		{
+			if(len1<0.5*len2) {v=false;cjkd.log("Stroke too short");}
+			else if(len1>2*len2) {v=false;cjkd.log("Stroke too long");}
+		}
+		else if((len1>256)||(len2>256))
+		{
+			if(len1<0.33*len2) {v=false;cjkd.log("Stroke too short");}
+			else if(len1>3*len2) {v=false;cjkd.log("Stroke too long");}
+		}
+		// console.log("len1:"+len1+" "+"len2:"+len2);
 	}
 	if(v)
 	{
@@ -160,7 +179,7 @@ cjkd.verify=function(p1)
 			if(d>dmax) {v=false;break;}
 		}
 		// console.log("d:"+d+"/"+dmax);
-		if(!v) console.log("stroke shape too different");
+		if(!v) cjkd.log("Stroke shape too different");
 	}
 	if(v) p2.classList.add("drawnGood");
 	else {p2.classList.add("drawnBad");cjkd.n=1;}
@@ -304,6 +323,7 @@ cjkd.setRefSvg=function(c)
 cjkd.setChar=function(k)
 {
 	let e,n;
+	cjkd.log("");
 	n=(cjkd.params.targetLang=="en")?2:3;
 	if(k<0) k=0;
 	if(k>=cjkd.dico.length) k=cjkd.dico.length-1;
@@ -368,6 +388,7 @@ cjkd.make=function(dico)
 	s+="<li><button onclick='cjkd.setCurrentChar()'>"+cjkd.retryLabel[cjkd.params.targetLang]+"</button></li>";
 	s+="<li><button onclick='cjkd.setNextChar()'>"+cjkd.nextLabel[cjkd.params.targetLang]+"</button></li>";
 	s+="</ul>";
+	s+="<div class='hint'></div>";
 	s+="<ul class='selector charNumList'>";
 	for(k=0;k<kmax;k++)
 	{
@@ -400,6 +421,7 @@ cjkd.add=function(s)
 	e.innerHTML=s;
 	cjkd.addGrid();
 	if(cjkd.params.gridOn=="0") document.querySelector(".cjkd .grid").style.display="none";
+	if(cjkd.params.hintOn=="0") document.querySelector(".cjkd .hint").style.display="none";
 	cjkd.js.parentNode.scrollIntoView();
 	cjkd.setChar(0);
 };
@@ -439,6 +461,7 @@ cjkd.checkStore=function()
 	if(!p.jaDicoName) p.jaDicoName="G1";
 	if(!p.zhHansDicoName) p.zhHansDicoName="NHSK1";
 	if(!p.gridOn) p.gridOn="0";
+	if(!p.hintOn) p.hintOn="0";
 	cjkd.setStore(p);
 };
 cjkd.checkStore();

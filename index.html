@@ -17,9 +17,13 @@ function doCjkdOKSettings()
 {
 	var e=document.querySelector(".settingsDialog");
 	cjkd.setParamToStore("gridOn",e.querySelector('.gridOn input').checked?"1":"0");
+	cjkd.setParamToStore("hintOn",e.querySelector('.hintOn input').checked?"1":"0");
 	cjkd.params.gridOn=cjkd.getParamFromStore("gridOn");
+	cjkd.params.hintOn=cjkd.getParamFromStore("hintOn");
 	if(cjkd.params.gridOn=="0") document.querySelector(".cjkd .grid").style.display="none";
 	else document.querySelector(".cjkd .grid").style.display="block";
+	if(cjkd.params.hintOn=="0") document.querySelector(".cjkd .hint").style.display="none";
+	else document.querySelector(".cjkd .hint").style.display="block";
 }
 function doCjkdSettings()
 {
@@ -34,6 +38,8 @@ function doCjkdSettings()
 		s+="<h1>CJKDraw</h1>";
 		a=(cjkd.params.targetLang=="fr")?"Grille":"Grid";
 		s+="<label class='gridOn'><input type='checkbox'><span>"+a+"</span></label>";
+		a=(cjkd.params.targetLang=="fr")?"Indication":"Hint";
+		s+="<label class='hintOn'><input type='checkbox'><span>"+a+"</span></label>";
 		s+="<button value='OK'>OK</button>";
 		s+="<button value='cancel'>"+((cjkd.params.targetLang=="fr")?"Annuler":"Cancel")+"</button>";
 		s+="</form>";
@@ -45,6 +51,7 @@ function doCjkdSettings()
 		document.querySelector(".cjkd").appendChild(e);
 	}
 	e.querySelector('.gridOn input').checked=(cjkd.params.gridOn=="1");
+	e.querySelector('.hintOn input').checked=(cjkd.params.hintOn=="1");
 	e.showModal();
 }
 </script>

@@ -107,6 +107,10 @@
 	outline:1px solid #fff;
 	outline-offset:-2px;
 }
+.cjkd .hint
+{
+	min-height:1.8em;
+}
 .cjkd em
 {
 	font-size:0.75em;
