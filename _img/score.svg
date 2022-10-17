@@ -1,0 +1,6 @@
+<svg viewBox='-24 -24 48 48' xmlns='http://www.w3.org/2000/svg'
+	 stroke-linecap="round" fill='none' stroke='#000' stroke-width='4'>
+<path d="M-21 7A21 21 1 0 1 21 7M0 7L7-5"/>
+<path stroke-linecap="square" d="M-21 9V14H21V9"/>
+<circle cx="0" cy="7" r="2"/>
+</svg>

@@ -17,7 +17,8 @@ cjkd.i18n=
 	"Stroke direction too different":{"fr":"Direction du trait trop différente"},
 	"Stroke too short":{"fr":"Trait trop court"},
 	"Stroke too long":{"fr":"Trait trop long"},
-	"Stroke shape too different":{"fr":"Forme du trait trop différente"}
+	"Stroke shape too different":{"fr":"Forme du trait trop différente"},
+	"Data not available!":{"fr":"Données non disponibles !"}
 };
 cjkd.getStore=function()
 {
@@ -38,18 +39,63 @@ cjkd.setParamToStore=function(a,v)
 	p[a]=v;
 	localStorage.setItem('cjkd',JSON.stringify(p));
 };
-cjkd.log=function(s)
+cjkd.getI18n=function(s)
 {
 	let m;
 	if((cjkd.params.targetLang=="en")||!cjkd.i18n[s]||!cjkd.i18n[s][cjkd.params.targetLang]) m=s;
 	else m=cjkd.i18n[s][cjkd.params.targetLang];
-	document.querySelector(".cjkd .hint").innerHTML=m;
+	return m;
 };
+cjkd.log=function(s)
+{
+	document.querySelector(".cjkd .hint").innerHTML=cjkd.getI18n(s);
+};
+cjkd.alert=function(m,title="CJKDraw",cls="neutral")
+{
+	var e;
+	e=document.querySelector(".cjkd .alertDialog");
+	if(!e)
+	{
+		let s="",a,b,c;
+		e=document.createElement('dialog');
+		e.classList.add("alertDialog");
+		e.classList.add(cls);
+		s+="<h1>"+title+"</h1>";
+		s+="<form method='dialog'>";
+		s+="<p class='message'>"+m+"</p>";
+		s+="<button value='OK'>OK</button>";
+		s+="</form>";
+		e.innerHTML=s;
+		document.querySelector(".cjkd").appendChild(e);
+	}
+	e.querySelector('.message').innerHTML=m;
+	e.showModal();
+}
 cjkd.distance=function(p1,p2)
 {
 	return Math.sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y));
 };
-
+cjkd.incTry=function()
+{
+	if(!cjkd.params.results[cjkd.params.sourceLang][cjkd.dicoName])
+		cjkd.params.results[cjkd.params.sourceLang][cjkd.dicoName]={};
+	let r=cjkd.params.results[cjkd.params.sourceLang][cjkd.dicoName][cjkd.currentChar];
+	if(!r) r=[0,0];
+	r[0]=r[0]+1;
+	cjkd.params.results[cjkd.params.sourceLang][cjkd.dicoName][cjkd.currentChar]=r;
+	cjkd.setStore(cjkd.params);
+	// console.log(cjkd.params.results[cjkd.params.sourceLang]);
+};
+cjkd.incSuccess=function()
+{
+	if(!cjkd.params.results[cjkd.params.sourceLang][cjkd.dicoName])
+		cjkd.params.results[cjkd.params.sourceLang][cjkd.dicoName]={};
+	let r=cjkd.params.results[cjkd.params.sourceLang][cjkd.dicoName][cjkd.currentChar];
+	if(!r) r=[0,0];
+	r[1]=r[1]+1;
+	cjkd.params.results[cjkd.params.sourceLang][cjkd.dicoName][cjkd.currentChar]=r;
+	// no need to save in local store since it will be done when incTry()
+};
 cjkd.finalCut=function()
 {
 	let e=document.querySelector(".cjkd .charNumList li:nth-of-type("+(cjkd.k+1)+") button");
@@ -60,8 +106,14 @@ cjkd.finalCut=function()
 		{
 			document.querySelector(".cjkd .acjk").classList.add("drawnGood");
 			e.className="drawnGood";
+			cjkd.incSuccess();
+			cjkd.incTry();
 		}
-		else if(cjkd.n==1) e.className="drawnBad";
+		else if(cjkd.n==1)
+		{
+			e.className="drawnBad";
+			cjkd.incTry();
+		}
 		else e.className="notDrawn";
 	}
 };
@@ -235,18 +287,21 @@ cjkd.drawMove=function(pt)
 
 cjkd.pointerDown=function(e)
 {
+	if(cjkd.error) return false;
 	if(cjkd.s>=cjkd.numOfStrokes) return false;
 	return cjkd.drawStart(cjkd.relPos(e.touches?e.touches[0]:e));
 };
 
 cjkd.pointerMove=function(e)
 {
+	if(cjkd.error) return false;
 	if(cjkd.s>=cjkd.numOfStrokes) return false;
 	return cjkd.drawMove(cjkd.relPos(e.touches?e.touches[0]:e));
 };
 
 cjkd.pointerUp=function(e)
 {
+	if(cjkd.error) return false;
 	if(cjkd.s>=cjkd.numOfStrokes) return false;
 	if (cjkd.svgPath)
 	{
@@ -282,6 +337,7 @@ cjkd.setCanvas=function()
 		cjkd.svgCanvas.addEventListener("mouseup",cjkd.draw("remove","mousemove","mouseup"));
 		cjkd.svgCanvas.addEventListener("mouseout",cjkd.draw("remove","mousemove","mouseup"));
 	}
+	cjkd.error=false;
 	cjkd.svgPath=null;
 	cjkd.arrayPath=[];
 	cjkd.s=0; // stroke to draw
@@ -306,16 +362,30 @@ cjkd.setRefSvg=function(c)
 	{
 		fetch(cjkd.params.animCJKDir+"svgs"+lang+"/"+u+".svg")
 		.then(r=>r.text())
+		.catch(error => {
+			console.log("failed to get "+c+" svg file!");
+			return false;}
+			)
 		.then(r=>
 			{
-				let z;
-				z=r.replaceAll("z"+u,"svg4cjkdBox").replaceAll("zk","zk4cjkdBox");
-				z=z.replace(/<!--[^£]*-->\s?/g,"");
-				z=z.replace(/<style>[^£]*<\/style>\s?/g,"");
-				z=z.replace(/ pathLength="3333"/g,"");
-				cjkd[lang]["u"+u]=z;
-				e.innerHTML=z+e.innerHTML;
-				cjkd.setCanvas();
+				if(r)
+				{
+					let z;
+					z=r.replaceAll("z"+u,"svg4cjkdBox").replaceAll("zk","zk4cjkdBox");
+					z=z.replace(/<!--[^£]*-->\s?/g,"");
+					z=z.replace(/<style>[^£]*<\/style>\s?/g,"");
+					z=z.replace(/ pathLength="3333"/g,"");
+					cjkd[lang]["u"+u]=z;
+					e.innerHTML=z+e.innerHTML;
+					cjkd.setCanvas();
+					return true;
+				}
+				else
+				{
+					cjkd.error=true;
+					cjkd.alert(cjkd.getI18n("Data not available!"));
+					return false;
+				}
 			});
 	}
 };
@@ -323,6 +393,7 @@ cjkd.setRefSvg=function(c)
 cjkd.setChar=function(k)
 {
 	let e,n;
+	cjkd.currentChar=cjkd.dico[k][0];
 	cjkd.log("");
 	n=(cjkd.params.targetLang=="en")?2:3;
 	if(k<0) k=0;
@@ -334,7 +405,7 @@ cjkd.setChar=function(k)
 	if(e) e.innerHTML="";
 	e=document.querySelector(".cjkd .charToGuest");
 	e.innerHTML=cjkd.dico[k][1].replace("<br>",", ")+", "+cjkd.dico[k][n];
-	cjkd.setRefSvg(cjkd.dico[k][0]);
+	cjkd.setRefSvg(cjkd.currentChar);
 	let b0=document.querySelector(".cjkd .navBtnList li:first-of-type button");
 	let bN=document.querySelector(".cjkd .navBtnList li:last-of-type button");
 	if(k==0)
@@ -462,6 +533,7 @@ cjkd.checkStore=function()
 	if(!p.zhHansDicoName) p.zhHansDicoName="NHSK1";
 	if(!p.gridOn) p.gridOn="0";
 	if(!p.hintOn) p.hintOn="0";
+	if(!p.results) p.results={ja:{},zh:{}}; // {"一":[tries, success],"二":[tries, success],...]
 	cjkd.setStore(p);
 };
 cjkd.checkStore();

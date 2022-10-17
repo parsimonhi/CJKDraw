@@ -54,16 +54,31 @@ function doCjkdSettings()
 	e.querySelector('.hintOn input').checked=(cjkd.params.hintOn=="1");
 	e.showModal();
 }
+function doCjkdScore()
+{
+	let a=cjkd.params.results[cjkd.params.sourceLang][cjkd.dicoName],s="";
+	if (a)
+		for (let key in a)
+			if (a.hasOwnProperty(key))
+			{
+				if(s) s+=", ";
+				s+="<span lang='"+cjkd.params.sourceLang+"'>"+key+"</span>: "+a[key][1]+"/"+a[key][0];
+			}
+    if(!s) s=(cjkd.params.targetLang=="fr")?"Pas de données !":"No data!";
+	s=cjkd.dicoName+"<br>"+s;
+	cjkd.alert(s,"Score");
+}
 </script>
 </head>
 <body>
 <h1>CJKDraw</h1>
 <ul class="selector settings">
-<li class="flag zhHans"><button onclick="cjkd.setSourceLang('ja');cjkd.start('');"><img alt="中国国旗" src="_img/chn23.svg" width="48" height="32"></button></li>
-<li class="flag ja"><button onclick="cjkd.setSourceLang('zhHans');cjkd.start('');"><img alt="日本の国旗" src="_img/jap23.svg" width="48" height="32"></button></li>
-<li class="icon"><button onclick="doCjkdSettings();"><img class="settingsIcon" alt="Settings" title="Settings" src="_img/settings.svg" width="32" height="32"></button></li>
-<li class="flag en"><button onclick="cjkd.setTargetLang('fr');cjkd.start('');"><img alt="British flag" src="_img/gbr23.svg" width="48" height="32"></button></li>
-<li class="flag fr"><button onclick="cjkd.setTargetLang('en');cjkd.start('');"><img alt="Drapeau français" src="_img/fra23.svg" width="48" height="32"></button></li>
+<li class="flag zhHans"><button onclick="cjkd.setSourceLang('ja');cjkd.start('');"><img alt="中国国旗" title="中国话" src="_img/chn23.svg" width="48" height="32"></button></li>
+<li class="flag ja"><button onclick="cjkd.setSourceLang('zhHans');cjkd.start('');"><img alt="日本の国旗" title="日本語" src="_img/jap23.svg" width="48" height="32"></button></li>
+<li class="icon"><button onclick="doCjkdSettings();"><img class="settingsIcon" alt="Settings Icon" title="Settings" src="_img/settings.svg" width="32" height="32"></button></li>
+<li class="icon"><button onclick="doCjkdScore();"><img class="scoreIcon" alt="Score Icon" title="Score" src="_img/score.svg" width="32" height="32"></button></li>
+<li class="flag en"><button onclick="cjkd.setTargetLang('fr');cjkd.start('');"><img alt="British flag" title="English" src="_img/gbr23.svg" width="48" height="32"></button></li>
+<li class="flag fr"><button onclick="cjkd.setTargetLang('en');cjkd.start('');"><img alt="Drapeau français" title="Français" src="_img/fra23.svg" width="48" height="32"></button></li>
 </ul>
 <ul class="selector ja">
 	<li><button onclick="cjkd.start('G1');">1</button></li>
@@ -112,9 +127,13 @@ cjkd.setTargetLang=function(lang)
 	let flagEn=document.querySelector(".flag.en");
 	let flagFr=document.querySelector(".flag.fr");
 	let settingsIcon=document.querySelector(".settingsIcon");
+	let scoreIcon=document.querySelector(".scoreIcon");
 	flagEn.style.display=(lang=="en")?"inline-block":"none";
 	flagFr.style.display=(lang=="fr")?"inline-block":"none";
 	settingsIcon.setAttribute("title",(lang=="fr")?"Settings":"Paramètres");
+	settingsIcon.setAttribute("alt",(lang=="fr")?"Settings Icon":"Icône paramètres");
+	scoreIcon.setAttribute("title",(lang=="fr")?"Score":"Score");
+	scoreIcon.setAttribute("alt",(lang=="fr")?"Score Icon":"Icône score");
 	cjkd.setParamToStore("targetLang",lang);
 }
 
