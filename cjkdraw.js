@@ -5,13 +5,13 @@ cjkd.copyright=
 	fr:"<a href='https://github.com/parsimonhi/CJKDraw'>CJKDraw</a> Copyright 2022 FM&SH"
 };
 cjkd.instructions={en:"Draw the character that has the meaning above in the rectangle below.",fr:"Dessinez le caractère qui a la signification ci-dessus dans le rectangle ci-dessous."};
-cjkd.levelLabel={en:"Level: ",fr:"Niveau : "};
-cjkd.predLabel={en:"Pred",fr:"Précédent"};
-cjkd.retryLabel={en:"Retry",fr:"Réessayer"};
-cjkd.nextLabel={en:"Next",fr:"Suivant"};
 cjkd.js=document.scripts[document.scripts.length-1]; // current js script
 cjkd.i18n=
 {
+	"Level: ":{fr:"Niveau : "},
+	"Pred":{fr:"Précédent"},
+	"Retry":{fr:"Réessayer"},
+	"Next":{fr:"Suivant"},
 	"Stroke too small":{"fr":"Trait trop petit"},
 	"Stroke start too far":{"fr":"Départ du trait trop loin"},
 	"Stroke direction too different":{"fr":"Direction du trait trop différente"},
@@ -364,8 +364,7 @@ cjkd.setRefSvg=function(c)
 		.then(r=>r.text())
 		.catch(error => {
 			console.log("failed to get "+c+" svg file!");
-			return false;}
-			)
+			return false;})
 		.then(r=>
 			{
 				if(r)
@@ -447,7 +446,7 @@ cjkd.make=function(dico)
 	s+="<div class='charToGuest'></div>";
 	s+="<div class='instructions'>"+cjkd.instructions[cjkd.params.targetLang]+"</div>";
 	s+="<div class='level'>";
-	s+=cjkd.levelLabel[cjkd.params.targetLang]+cjkd.dicoName;
+	s+=cjkd.getI18n("Level: ")+cjkd.dicoName;
 	s+="</div>";
 	s+="<div class='box'>";
 	s+="<svg class='userDrawing' width='100%' height='100%' viewBox='0 0 1024 1024'>";
@@ -455,9 +454,9 @@ cjkd.make=function(dico)
 	s+="</svg>";
 	s+="</div>";
 	s+="<ul class='selector navBtnList'>";
-	s+="<li><button onclick='cjkd.setPredChar()'>"+cjkd.predLabel[cjkd.params.targetLang]+"</button></li>";
-	s+="<li><button onclick='cjkd.setCurrentChar()'>"+cjkd.retryLabel[cjkd.params.targetLang]+"</button></li>";
-	s+="<li><button onclick='cjkd.setNextChar()'>"+cjkd.nextLabel[cjkd.params.targetLang]+"</button></li>";
+	s+="<li><button onclick='cjkd.setPredChar()'>"+cjkd.getI18n("Pred")+"</button></li>";
+	s+="<li><button onclick='cjkd.setCurrentChar()'>"+cjkd.getI18n("Retry")+"</button></li>";
+	s+="<li><button onclick='cjkd.setNextChar()'>"+cjkd.getI18n("Next")+"</button></li>";
 	s+="</ul>";
 	s+="<div class='hint'></div>";
 	s+="<ul class='selector charNumList'>";
@@ -520,7 +519,25 @@ cjkd.start=function(dicoName)
 	cjkd.init(dicoName);
 	fetch("_json/"+cjkd.dicoName+".json")
 	.then(r=>r.json())
-	.then(r=>cjkd.add(cjkd.make(r)));
+	.catch(error =>
+	{
+		console.log("failed to get "+cjkd.dicoName+" json file!");
+		return false;
+	})
+	.then(r=>
+	{
+		if(r)
+		{
+			cjkd.add(cjkd.make(r));
+			return true;
+		}
+		else
+		{
+			cjkd.error=true;
+			cjkd.alert(cjkd.getI18n("Data not available!"));
+			return false;
+		}
+	});
 };
 cjkd.checkStore=function()
 {
