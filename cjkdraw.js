@@ -105,16 +105,25 @@ cjkd.finalCut=function()
 		if(cjkd.n==2)
 		{
 			document.querySelector(".cjkd .acjk").classList.add("drawnGood");
-			e.className="drawnGood";
+			e.classList.remove("notDrawn");
+			e.classList.remove("drawnBad");
+			e.classList.add("drawnGood");
 			cjkd.incSuccess();
 			cjkd.incTry();
 		}
 		else if(cjkd.n==1)
 		{
-			e.className="drawnBad";
+			e.classList.remove("notDrawn");
+			e.classList.remove("drawnGood");
+			e.classList.add("drawnBad");
 			cjkd.incTry();
 		}
-		else e.className="notDrawn";
+		else
+		{
+			e.classList.remove("drawnBad");
+			e.classList.remove("drawnGood");
+			e.classList.add("notDrawn");
+		}
 	}
 };
 
@@ -391,7 +400,11 @@ cjkd.setRefSvg=function(c)
 
 cjkd.setChar=function(k)
 {
-	let e,n;
+	let e,n,dds,btnoa;
+	btnoa=document.querySelector(".onAir");
+	if(btnoa) btnoa.classList.remove("onAir");
+	btnoa=document.querySelector(".cjkd .charNumList li:nth-of-type("+(k+1)+") button");
+	if(btnoa) btnoa.classList.add("onAir");
 	cjkd.currentChar=cjkd.dico[k][0];
 	cjkd.log("");
 	n=(cjkd.params.targetLang=="en")?2:3;
@@ -403,7 +416,8 @@ cjkd.setChar=function(k)
 	e=document.querySelector(".cjkd .box .userDrawing");
 	if(e) e.innerHTML="";
 	e=document.querySelector(".cjkd .charToGuest");
-	e.innerHTML=cjkd.dico[k][1].replace("<br>",", ")+", "+cjkd.dico[k][n];
+	dds=(cjkd.params.targetLang=="en")?": ":" : ";
+	e.innerHTML=(cjkd.k+1)+dds+cjkd.dico[k][1].replace("<br>",", ")+", "+cjkd.dico[k][n];
 	cjkd.setRefSvg(cjkd.currentChar);
 	let b0=document.querySelector(".cjkd .navBtnList li:first-of-type button");
 	let bN=document.querySelector(".cjkd .navBtnList li:last-of-type button");
