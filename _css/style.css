@@ -60,5 +60,21 @@ body
 {
 	margin:0 0.25em;
 }
+.scoreAlert .charScoreList
+{
+	display:grid;
+	grid-template-columns:repeat(auto-fill,minmax(5.5em,1fr));
+	grid-gap:0.125em;
+	max-width:calc(100vw - 3em);
+	width:88em;
+}
+.scoreAlert .scoreDicoName
+{
+	margin-bottom:0.5em;
+}
+.scoreAlert button
+{
+	margin-top:0.5em;
+}
 
 [onclick] {cursor:pointer;}

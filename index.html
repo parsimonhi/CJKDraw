@@ -58,15 +58,32 @@ function doCjkdScore()
 {
 	let a=cjkd.params.results[cjkd.params.sourceLang][cjkd.dicoName],s="";
 	if (a)
-		for (let key in a)
-			if (a.hasOwnProperty(key))
+	{
+		let k,km,n,m;
+		km=cjkd.dico.length;
+		s+="<div class='charScoreList'>";
+		for(k=0;k<km;k++)
+		{
+			if(a[cjkd.dico[k][0]])
 			{
-				if(s) s+=", ";
-				s+="<span lang='"+cjkd.params.sourceLang+"'>"+key+"</span>: "+a[key][1]+"/"+a[key][0];
+				m=a[cjkd.dico[k][0]][1];
+				n=a[cjkd.dico[k][0]][0];
 			}
+			else
+			{
+				m=0;
+				n=0;
+			}
+			s+="<div>";
+			s+="<span lang='"+cjkd.params.sourceLang+"'>"+cjkd.dico[k][0]+"</span>: ";
+			s+=m+"/"+n;
+			s+="</div>";
+		}
+		s+="</div>";
+	}
     if(!s) s=(cjkd.params.targetLang=="fr")?"Pas de données !":"No data!";
-	s=cjkd.dicoName+"<br>"+s;
-	cjkd.alert(s,"Score");
+	s="<div class='scoreDicoName'>"+cjkd.dicoName+"</div>"+s;
+	cjkd.alert(s,"Score","scoreAlert");
 }
 </script>
 </head>

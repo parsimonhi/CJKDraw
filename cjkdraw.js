@@ -62,7 +62,7 @@ cjkd.alert=function(m,title="CJKDraw",cls="neutral")
 		e.classList.add(cls);
 		s+="<h1>"+title+"</h1>";
 		s+="<form method='dialog'>";
-		s+="<p class='message'>"+m+"</p>";
+		s+="<div class='message'>"+m+"</div>";
 		s+="<button value='OK'>OK</button>";
 		s+="</form>";
 		e.innerHTML=s;
