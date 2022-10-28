@@ -77,6 +77,8 @@ cjkd.distance=function(p1,p2)
 };
 cjkd.incTry=function()
 {
+	if(!cjkd.params.results[cjkd.params.sourceLang])
+		cjkd.params.results[cjkd.params.sourceLang]={};
 	if(!cjkd.params.results[cjkd.params.sourceLang][cjkd.dicoName])
 		cjkd.params.results[cjkd.params.sourceLang][cjkd.dicoName]={};
 	let r=cjkd.params.results[cjkd.params.sourceLang][cjkd.dicoName][cjkd.currentChar];
@@ -88,6 +90,8 @@ cjkd.incTry=function()
 };
 cjkd.incSuccess=function()
 {
+	if(!cjkd.params.results[cjkd.params.sourceLang])
+		cjkd.params.results[cjkd.params.sourceLang]={};
 	if(!cjkd.params.results[cjkd.params.sourceLang][cjkd.dicoName])
 		cjkd.params.results[cjkd.params.sourceLang][cjkd.dicoName]={};
 	let r=cjkd.params.results[cjkd.params.sourceLang][cjkd.dicoName][cjkd.currentChar];
@@ -564,7 +568,7 @@ cjkd.checkStore=function()
 	if(!p.zhHansDicoName) p.zhHansDicoName="NHSK1";
 	if(!p.gridOn) p.gridOn="0";
 	if(!p.hintOn) p.hintOn="0";
-	if(!p.results) p.results={ja:{},zh:{}}; // {"一":[tries, success],"二":[tries, success],...]
+	if(!p.results) p.results={};
 	cjkd.setStore(p);
 };
 cjkd.checkStore();
