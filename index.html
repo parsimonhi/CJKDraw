@@ -56,7 +56,9 @@ function doCjkdSettings()
 }
 function doCjkdScore()
 {
-	let a=cjkd.params.results[cjkd.params.sourceLang][cjkd.dicoName],s="";
+	let a,s="";
+	if(cjkd.params.results[cjkd.params.sourceLang])
+		a=cjkd.params.results[cjkd.params.sourceLang][cjkd.dicoName];
 	if (a)
 	{
 		let k,km,n,m;
