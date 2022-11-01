@@ -84,6 +84,14 @@
     -moz-appearance:none;
     appearance:none;
 }
+.cjkd .good
+{
+	color:#090;
+}
+.cjkd .bad
+{
+	color:#f00;
+}
 .cjkd .selector.charNumList button.notDrawn
 {
 	border:1px solid #000;

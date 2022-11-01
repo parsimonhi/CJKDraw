@@ -8,6 +8,7 @@ cjkd.instructions={en:"Draw the character that has the meaning above in the rect
 cjkd.js=document.scripts[document.scripts.length-1]; // current js script
 cjkd.i18n=
 {
+	": ":{fr:" : "},
 	"Level: ":{fr:"Niveau : "},
 	"Pred":{fr:"Précédent"},
 	"Retry":{fr:"Réessayer"},
@@ -46,9 +47,26 @@ cjkd.getI18n=function(s)
 	else m=cjkd.i18n[s][cjkd.params.targetLang];
 	return m;
 };
-cjkd.log=function(s)
+cjkd.log=function(s,c="",cls="")
 {
-	document.querySelector(".cjkd .hint").innerHTML=cjkd.getI18n(s);
+	let m=c?"<span lang='"+cjkd.params.sourceLang+"'>"+c+"</span> ":"";
+	let e=document.querySelector(".cjkd .hint");
+	e.innerHTML=m+cjkd.getI18n(s);
+	if(cls=="good")
+	{
+		e.classList.remove("bad");
+		e.classList.add("good");
+	}
+	else if(cls=="bad")
+	{
+		e.classList.remove("good");
+		e.classList.add("bad");
+	}
+	else
+	{
+		e.classList.remove("bad");
+		e.classList.remove("good");
+	}
 };
 cjkd.alert=function(m,title="CJKDraw",cls="neutral")
 {
@@ -129,6 +147,9 @@ cjkd.finalCut=function()
 			e.classList.add("notDrawn");
 		}
 	}
+	if(cjkd.n==2) cjkd.log("OK",cjkd.currentChar,"good");
+	else if(cjkd.n==1) cjkd.log("NOK",cjkd.currentChar,"bad");
+	else cjkd.log("");
 };
 
 cjkd.verify=function(p1)
@@ -144,7 +165,7 @@ cjkd.verify=function(p1)
 	if(len1<10)
 	{
 		v=false; // discard very small strokes (< 10 svg units)
-		cjkd.log("Stroke too small");
+		cjkd.log("Stroke too small","","bad");
 	}
 	len2=p2.getTotalLength();
 	if(v)
@@ -165,7 +186,7 @@ cjkd.verify=function(p1)
 		d=cjkd.distance(pts1[0],pts2[0]);
 		if(d>256) v=false;
 		// console.log("d: "+d);
-		if(!v) cjkd.log("Stroke start too far");
+		if(!v) cjkd.log("Stroke start too far","","bad");
 	}
 	if(v)
 	{
@@ -187,20 +208,20 @@ cjkd.verify=function(p1)
 			&&(Math.abs(a1+2*Math.PI-a2)>am)
 			&&(Math.abs(a1-2*Math.PI-a2)>am)) v=false;
 		// console.log(180*am/Math.PI+" "+180*a1/Math.PI+" "+180*a2/Math.PI);
-		if(!v) cjkd.log("Stroke direction too different");
+		if(!v) cjkd.log("Stroke direction too different","","bad");
 	}
 	if(v)
 	{
 		// discard strokes that are too smaller or too bigger
 		if((len1>256)&&(len2>256))
 		{
-			if(len1<0.5*len2) {v=false;cjkd.log("Stroke too short");}
-			else if(len1>2*len2) {v=false;cjkd.log("Stroke too long");}
+			if(len1<0.5*len2) {v=false;cjkd.log("Stroke too short","","bad");}
+			else if(len1>2*len2) {v=false;cjkd.log("Stroke too long","","bad");}
 		}
 		else if((len1>256)||(len2>256))
 		{
-			if(len1<0.33*len2) {v=false;cjkd.log("Stroke too short");}
-			else if(len1>3*len2) {v=false;cjkd.log("Stroke too long");}
+			if(len1<0.33*len2) {v=false;cjkd.log("Stroke too short","","bad");}
+			else if(len1>3*len2) {v=false;cjkd.log("Stroke too long","","bad");}
 		}
 		// console.log("len1:"+len1+" "+"len2:"+len2);
 	}
@@ -244,7 +265,7 @@ cjkd.verify=function(p1)
 			if(d>dmax) {v=false;break;}
 		}
 		// console.log("d:"+d+"/"+dmax);
-		if(!v) cjkd.log("Stroke shape too different");
+		if(!v) cjkd.log("Stroke shape too different","","bad");
 	}
 	if(v) p2.classList.add("drawnGood");
 	else {p2.classList.add("drawnBad");cjkd.n=1;}
