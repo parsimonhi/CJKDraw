@@ -14,5 +14,5 @@ Require https://github.com/parsimonhi/animCJK
 
 ## Copyright and License
 
-Copyright: 2022 FM&SH,
+Copyright: 2022-2023 FM&SH,
 License: https://creativecommons.org/licenses/by/4.0/

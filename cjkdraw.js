@@ -1,8 +1,8 @@
 cjkd={};
 cjkd.copyright=
 {
-	en:"<a href='https://github.com/parsimonhi/CJKDraw'>CJKDraw</a> Copyright 2022 FM&SH",
-	fr:"<a href='https://github.com/parsimonhi/CJKDraw'>CJKDraw</a> Copyright 2022 FM&SH"
+	en:"<a href='https://github.com/parsimonhi/CJKDraw'>CJKDraw</a> Copyright 2022-2023 FM&SH",
+	fr:"<a href='https://github.com/parsimonhi/CJKDraw'>CJKDraw</a> Copyright 2022-2023 FM&SH"
 };
 cjkd.instructions={en:"Draw the character that has the meaning above in the rectangle below.",fr:"Dessinez le caractère qui a la signification ci-dessus dans le rectangle ci-dessous."};
 cjkd.js=document.scripts[document.scripts.length-1]; // current js script
@@ -19,6 +19,7 @@ cjkd.i18n=
 	"Stroke too short":{"fr":"Trait trop court"},
 	"Stroke too long":{"fr":"Trait trop long"},
 	"Stroke shape too different":{"fr":"Forme du trait trop différente"},
+	"Server unreachable!":{fr:"Serveur inaccessible !"},
 	"Data not available!":{"fr":"Données non disponibles !"}
 };
 cjkd.getStore=function()
@@ -395,10 +396,11 @@ cjkd.setRefSvg=function(c)
 	else
 	{
 		fetch(cjkd.params.animCJKDir+"svgs"+lang+"/"+u+".svg")
-		.then(r=>r.text())
-		.catch(error => {
-			console.log("failed to get "+c+" svg file!");
-			return false;})
+		.then(r=>
+			{
+				if(!r.ok) throw r.statusText;
+				return r.text();
+			})
 		.then(r=>
 			{
 				if(r)
@@ -419,6 +421,12 @@ cjkd.setRefSvg=function(c)
 					cjkd.alert(cjkd.getI18n("Data not available!"));
 					return false;
 				}
+			})
+		.catch(e=>
+			{
+				cjkd.error=true;
+				cjkd.alert(cjkd.getI18n("Server unreachable!"));
+				return false;
 			});
 	}
 };
@@ -558,11 +566,6 @@ cjkd.start=function(dicoName)
 	cjkd.init(dicoName);
 	fetch("_json/"+cjkd.dicoName+".json")
 	.then(r=>r.json())
-	.catch(error =>
-	{
-		console.log("failed to get "+cjkd.dicoName+" json file!");
-		return false;
-	})
 	.then(r=>
 	{
 		if(r)
@@ -576,6 +579,13 @@ cjkd.start=function(dicoName)
 			cjkd.alert(cjkd.getI18n("Data not available!"));
 			return false;
 		}
+	})
+	.catch(e=>
+	{
+		cjkd.error=true;
+		cjkd.alert(cjkd.getI18n("Server unreachable!"));
+		console.log("failed to get "+cjkd.dicoName+" json file!");
+		return false;
 	});
 };
 cjkd.checkStore=function()
