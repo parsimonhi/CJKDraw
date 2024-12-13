@@ -1,8 +1,8 @@
 cjkd={};
 cjkd.copyright=
 {
-	en:"<a href='https://github.com/parsimonhi/CJKDraw'>CJKDraw</a> Copyright 2022-2023 FM&SH",
-	fr:"<a href='https://github.com/parsimonhi/CJKDraw'>CJKDraw</a> Copyright 2022-2023 FM&SH"
+	en:"<a href='https://github.com/parsimonhi/CJKDraw'>CJKDraw</a> Copyright 2022-2024 FM&SH",
+	fr:"<a href='https://github.com/parsimonhi/CJKDraw'>CJKDraw</a> Copyright 2022-2024 FM&SH"
 };
 cjkd.instructions={en:"Draw the character that has the meaning above in the rectangle below.",fr:"Dessinez le caractère qui a la signification ci-dessus dans le rectangle ci-dessous."};
 cjkd.js=document.scripts[document.scripts.length-1]; // current js script
